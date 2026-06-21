@@ -52,6 +52,7 @@ export interface ChannelResult {
   channelId: string
   channelName: string
   thumbnailUrl: string
+  channelUrl: string
   subscriberCount: number
   scores: ChannelScore
   fsi: number

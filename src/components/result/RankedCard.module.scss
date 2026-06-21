@@ -20,9 +20,27 @@
 
 .rank { font-size: 14px; font-weight: 700; color: $color-muted; min-width: 24px; }
 
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(59, 130, 246, 0.15);
+}
+
 .chInfo { display: flex; flex-direction: column; gap: 2px; }
 
-.name { font-size: 15px; font-weight: 700; color: $color-text; }
+.name {
+  font-size: 15px;
+  font-weight: 700;
+  color: $color-text;
+  text-decoration: none;
+  &:hover {
+    color: $color-primary;
+    text-decoration: underline;
+  }
+}
 .subs { font-size: 13px; color: $color-muted; }
 
 .right { display: flex; align-items: center; gap: $spacing-sm; }

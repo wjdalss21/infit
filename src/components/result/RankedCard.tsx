@@ -12,14 +12,17 @@ function fmt(n: number): string {
 interface Props { result: ChannelResult }
 
 export default function RankedCard({ result }: Props) {
-  const { rank, channelName, subscriberCount, scores, isRecommended, reason, riskTags } = result
+  const { rank, channelName, thumbnailUrl, channelUrl, subscriberCount, scores, isRecommended, reason, riskTags } = result
   return (
     <div className={`${styles.card} ${isRecommended ? styles.rec : styles.noRec}`}>
       <div className={styles.header}>
         <div className={styles.rankInfo}>
           <span className={styles.rank}>{rank}위</span>
+          <img src={thumbnailUrl} alt={channelName} className={styles.avatar} />
           <div className={styles.chInfo}>
-            <span className={styles.name}>{channelName}</span>
+            <a href={channelUrl} target="_blank" rel="noopener noreferrer" className={styles.name}>
+              {channelName}
+            </a>
             <span className={styles.subs}>구독자 {fmt(subscriberCount)}</span>
           </div>
         </div>
