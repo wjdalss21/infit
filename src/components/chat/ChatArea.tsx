@@ -13,7 +13,7 @@ import type { SubscriberRange, ChannelResult } from '@/types'
 import styles from './ChatArea.module.scss'
 
 const Q: Record<string, string> = {
-  product:  '안녕하세요! 저는 IN-Fit AI입니다.\nAI가 브랜드에 맞는 인플루언서를 자동으로 탐색하고 평가해드립니다.\n홍보할 제품명을 알려주세요.\n예: 선크림, 파운데이션, 마스카라',
+  product:  '안녕하세요! 저는 IN-Fit AI입니다.\nAI가 브랜드에 맞는 인플루언서를 자동으로 탐색하고 평가해드립니다.\n\n어떤 제품을 홍보하고 싶으신가요?\n예: 선크림, 파운데이션, 마스카라',
   features: '제품의 핵심 특징을 입력해주세요.\n예: 지속성, 발색력, 보습력',
   target:   '타겟층을 알려주세요.\n예: 미국 10대 학생들, 직장인 여성 2030',
   keyword:  '검색 키워드를 입력해주세요.\n예: glow, 파운데이션 추천',
