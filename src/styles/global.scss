@@ -1,0 +1,16 @@
+@use 'reset';
+@use 'variables' as *;
+@use 'mixins' as *;
+
+body {
+  font-family: $font-base;
+  font-size: $font-size-base;
+  background-color: $color-bg;
+  color: $color-text;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
