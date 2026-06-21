@@ -1,0 +1,38 @@
+@use 'variables' as *;
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-card;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  border-left: 4px solid transparent;
+}
+
+.rec    { border-left-color: $color-success; }
+.noRec  { border-left-color: $color-danger;  }
+
+.header { display: flex; justify-content: space-between; align-items: center; }
+
+.rankInfo { display: flex; align-items: center; gap: $spacing-md; }
+
+.rank { font-size: 13px; font-weight: 700; color: $color-muted; min-width: 24px; }
+
+.chInfo { display: flex; flex-direction: column; gap: 2px; }
+
+.name { font-size: 14px; font-weight: 700; color: $color-text; }
+.subs { font-size: 12px; color: $color-muted; }
+
+.right { display: flex; align-items: center; gap: $spacing-sm; }
+
+.total { font-size: 20px; font-weight: 800; color: $color-text; }
+
+.detail { display: flex; flex-direction: column; gap: $spacing-sm; }
+
+.bars { display: flex; flex-direction: column; gap: 6px; }
+
+.reason { font-size: 12px; color: $color-muted; margin-top: 4px; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }

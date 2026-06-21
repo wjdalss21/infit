@@ -1,0 +1,61 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-2xl;
+  padding: 0 $spacing-xl;
+  flex: 1;
+
+  @include tablet {
+    flex-direction: column;
+    gap: $spacing-xl;
+    padding: $spacing-xl $spacing-md;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  max-width: 480px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(26, 86, 219, 0.08);
+  color: $color-primary;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.headline {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1.08;
+  color: $color-text;
+  letter-spacing: -2.5px;
+
+  @include tablet { font-size: 40px; }
+}
+
+.desc {
+  font-size: 16px;
+  color: $color-muted;
+  line-height: 1.75;
+  max-width: 400px;
+}
+
+.right {
+  display: flex;
+  justify-content: center;
+}

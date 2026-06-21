@@ -1,0 +1,22 @@
+@use 'variables' as *;
+
+.gnb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: $color-surface;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  padding: 0 $spacing-xl;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  color: $color-primary;
+  letter-spacing: -0.5px;
+}

@@ -1,0 +1,28 @@
+@use 'variables' as *;
+
+.wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  align-self: flex-start;
+  padding-left: 44px;
+}
+
+.chip {
+  padding: 8px 18px;
+  border: 1.5px solid rgba(26, 86, 219, 0.3);
+  border-radius: 20px;
+  background: transparent;
+  color: $color-primary;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover { background: rgba(26, 86, 219, 0.06); border-color: $color-primary; }
+}
+
+.active {
+  background: $color-primary;
+  color: white;
+  border-color: $color-primary;
+}

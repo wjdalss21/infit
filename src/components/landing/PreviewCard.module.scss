@@ -1,0 +1,59 @@
+@use 'variables' as *;
+
+.card {
+  background: $color-primary;
+  border-radius: $radius-card;
+  padding: $spacing-lg;
+  color: white;
+  width: 300px;
+  box-shadow: 0 8px 32px rgba(26, 86, 219, 0.35);
+}
+
+.label {
+  font-size: 12px;
+  opacity: 0.75;
+  margin-bottom: $spacing-sm;
+}
+
+.score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: $spacing-md;
+}
+
+.num  { font-size: 52px; font-weight: 800; line-height: 1; }
+.unit { font-size: 16px; opacity: 0.65; }
+
+.bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  margin-bottom: $spacing-lg;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: white;
+  border-radius: 3px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 10px 6px;
+  gap: 4px;
+}
+
+.metricValue { font-size: 15px; font-weight: 700; }
+.metricLabel { font-size: 10px; opacity: 0.7; }

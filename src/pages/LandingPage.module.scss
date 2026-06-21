@@ -1,0 +1,14 @@
+@use 'variables' as *;
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $color-bg;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  margin-top: 60px;
+}

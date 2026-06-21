@@ -1,0 +1,42 @@
+@use 'variables' as *;
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.primary {
+  background: $color-primary;
+  color: #fff;
+  &:hover:not(:disabled) { background: $color-primary-hover; }
+}
+
+.ghost {
+  background: transparent;
+  color: $color-text;
+  &:hover:not(:disabled) { background: rgba(0, 0, 0, 0.05); }
+}
+
+.outline {
+  background: transparent;
+  border: 1.5px solid $color-primary;
+  color: $color-primary;
+  &:hover:not(:disabled) { background: rgba(26, 86, 219, 0.06); }
+}
+
+.sm  { padding: 6px 12px;  font-size: 13px; }
+.md  { padding: 10px 20px; font-size: 14px; }
+.lg  { padding: 14px 28px; font-size: 16px; }
+.full { width: 100%; }

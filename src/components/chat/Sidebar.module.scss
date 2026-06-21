@@ -1,0 +1,72 @@
+@use 'variables' as *;
+
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: $color-sidebar;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-lg $spacing-md;
+  gap: $spacing-lg;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  padding: $spacing-sm;
+  letter-spacing: -0.5px;
+}
+
+.newBtn {
+  width: 100%;
+  padding: 10px;
+  background: $color-primary;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover { background: $color-primary-hover; }
+}
+
+.section { display: flex; flex-direction: column; gap: $spacing-sm; }
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 $spacing-sm;
+}
+
+.list  { display: flex; flex-direction: column; gap: 2px; }
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-sm;
+  padding: 8px $spacing-sm;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+  &:hover { background: rgba(255, 255, 255, 0.07); }
+}
+
+.icon  { font-size: 14px; margin-top: 1px; opacity: 0.5; }
+
+.info  { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+.title {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta { font-size: 11px; color: rgba(255, 255, 255, 0.38); }
