@@ -9,9 +9,9 @@ function fmt(n: number): string {
   return n.toLocaleString()
 }
 
-interface Props { result: ChannelResult; expanded?: boolean }
+interface Props { result: ChannelResult }
 
-export default function RankedCard({ result, expanded = false }: Props) {
+export default function RankedCard({ result }: Props) {
   const { rank, channelName, subscriberCount, scores, isRecommended, reason, riskTags } = result
   return (
     <div className={`${styles.card} ${isRecommended ? styles.rec : styles.noRec}`}>
@@ -30,21 +30,19 @@ export default function RankedCard({ result, expanded = false }: Props) {
           </Badge>
         </div>
       </div>
-      {(expanded || !isRecommended) && (
-        <div className={styles.detail}>
-          <div className={styles.bars}>
-            <ScoreBar label="정량" value={scores.quantitative} />
-            <ScoreBar label="이미지" value={scores.image} />
-            <ScoreBar label="텍스트" value={scores.text} />
-          </div>
-          <p className={styles.reason}>{isRecommended ? '추천 이유: ' : '비추천 이유: '}{reason}</p>
-          {!isRecommended && riskTags.length > 0 && (
-            <div className={styles.tags}>
-              {riskTags.map((t) => <Badge key={t} variant="danger">{t}</Badge>)}
-            </div>
-          )}
+      <div className={styles.detail}>
+        <div className={styles.bars}>
+          <ScoreBar label="정량" value={scores.quantitative} />
+          <ScoreBar label="이미지" value={scores.image} />
+          <ScoreBar label="텍스트" value={scores.text} />
         </div>
-      )}
+        <p className={styles.reason}>{isRecommended ? '추천 이유: ' : '비추천 이유: '}{reason}</p>
+        {riskTags.length > 0 && (
+          <div className={styles.tags}>
+            {riskTags.map((t) => <Badge key={t} variant="danger">{t}</Badge>)}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

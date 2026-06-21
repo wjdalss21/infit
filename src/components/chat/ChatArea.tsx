@@ -111,7 +111,7 @@ export default function ChatArea() {
           <div className={styles.results}>
             <ResultSummary totalCount={channels.length} recommendedCount={recommended.length} topScore={topScore} />
             <div className={styles.list}>
-              {recommended.map((ch, i) => <RankedCard key={ch.channelId} result={ch} expanded={i === 0} />)}
+              {recommended.map((ch) => <RankedCard key={ch.channelId} result={ch} />)}
               {notRecommended.map((ch)  => <RankedCard key={ch.channelId} result={ch} />)}
             </div>
           </div>
