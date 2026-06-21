@@ -176,3 +176,43 @@ startNewSession: () =>
 컴포넌트 마운트 시 "최초 1회 실행"을 기대하는 `useEffect`는 StrictMode에서 2회 실행됨. 초기 데이터는 store 초기값으로 넣고, effect는 side effect(API 호출, DOM 조작 등)에만 사용할 것.
 
 ---
+
+## [TRB-005] Vercel Serverless Function 404 — api/analyze.ts 미인식
+
+### 현상
+
+분석 시작 후 "분석 중 오류가 발생했습니다. API error 404" 메시지 출력. `/api/analyze` 엔드포인트가 존재하지 않는 것처럼 응답.
+
+### 원인
+
+`api/analyze.ts`를 TypeScript로 작성했으나 프로젝트의 `tsconfig.json`이 `api/` 디렉토리를 컴파일 대상에 포함하지 않음.
+
+```json
+// tsconfig.json — api/ 디렉토리 미포함
+{
+  "references": [
+    { "path": "./tsconfig.app.json" },   // src/ 만 포함
+    { "path": "./tsconfig.node.json" }   // vite.config.ts 만 포함
+  ]
+}
+```
+
+Vercel은 TypeScript 함수를 컴파일하려 하지만 설정이 없어 인식 실패 → 404 반환. 기존 `api/*.js` 파일들이 모두 JavaScript였던 이유도 동일.
+
+### 수정
+
+`api/analyze.ts` 삭제 후 `api/analyze.js`로 재작성. ES module 문법(`export default`) 유지.
+
+```bash
+# 기존 .ts 삭제
+rm api/analyze.ts
+
+# .js로 재작성 후 커밋
+git add api/analyze.js
+```
+
+### 교훈
+
+Vite 프로젝트의 `api/` 디렉토리 서버리스 함수는 프로젝트 TypeScript 설정과 독립적. 별도 tsconfig 없이는 `.js`로 작성해야 Vercel이 정상 인식. 기존 파일 확장자를 먼저 확인할 것.
+
+---
