@@ -65,3 +65,114 @@ export default function RankedCard({ result }: Props) {
 초기에 "1위만 펼쳐 보이고 나머지는 접기" 방식을 기획했다가 기획이 변경됐는데, 컴포넌트 인터페이스(`expanded`)가 그대로 남아 있어서 발생한 불일치. 기획 변경 시 관련 prop·조건도 함께 정리해야 함.
 
 ---
+
+## [TRB-002] 헤더 타이틀·뱃지 상태 불일치 (분석 진행 중 + 분석 완료 동시 표시)
+
+### 현상
+
+채팅 분석이 완료된 후 헤더 왼쪽에 "분석 진행 중", 오른쪽에 "AI 분석 완료"가 동시에 표시됨. 상태가 서로 모순되는 텍스트가 나란히 노출.
+
+### 원인
+
+왼쪽 타이틀이 `chatStep`에 관계없이 하드코딩돼 있었고, 오른쪽 뱃지만 `isDone` 조건으로 분기됨.
+
+```tsx
+// 문제 코드 — ChatArea.tsx
+<span className={styles.title}>분석 진행 중</span>   {/* 항상 고정 */}
+<span ...>{isDone ? 'AI 분석 완료' : 'AI 분석 준비됨'}</span>  {/* 오른쪽만 분기 */}
+```
+
+### 수정
+
+`chatStep`을 기준으로 왼쪽·오른쪽 모두 파생값으로 계산.
+
+```tsx
+const headerTitle = isDone ? '분석 완료' : isAnalyzing ? '분석 진행 중' : '정보 입력 중'
+const badgeLabel  = isDone ? 'AI 분석 완료' : isAnalyzing ? '분석 중...' : 'AI 준비됨'
+```
+
+| chatStep | 왼쪽 타이틀 | 오른쪽 뱃지 |
+|---|---|---|
+| product ~ confirm | 정보 입력 중 | AI 준비됨 |
+| analyzing | 분석 진행 중 | 분석 중... |
+| done | 분석 완료 | AI 분석 완료 |
+
+### 교훈
+
+UI 텍스트를 하드코딩하면 상태가 바뀌어도 반영이 안 됨. 상태에 따라 바뀌는 텍스트는 반드시 상태값에서 파생된 변수로 선언해야 함.
+
+---
+
+## [TRB-003] 빌드 실패 — index.html 누락 (UNRESOLVED_ENTRY)
+
+### 현상
+
+`npm run build` 실행 시 `Cannot resolve entry module index.html` 에러로 빌드 중단.
+
+### 원인
+
+Vite는 루트 디렉토리의 `index.html`을 빌드 엔트리로 사용함. 이전 커밋 과정에서 `index.html`이 스테이징되지 않아 워킹트리에서 삭제됨.
+
+### 수정
+
+git 히스토리에서 초기 커밋의 `index.html`을 복원하고 `lang="ko"`로 수정 후 재커밋.
+
+### 교훈
+
+Vite 프로젝트의 `index.html`은 루트에 항상 존재해야 함. 빌드가 갑자기 실패하면 루트 파일 목록부터 확인할 것.
+
+---
+
+## [TRB-004] 채팅 시작 시 첫 AI 메시지 2개 중복 출력
+
+### 현상
+
+`/app` 진입 시 AI 첫 인사 메시지("어떤 제품을 홍보하고 싶으신가요?")가 2개 연속으로 나타남.
+
+### 원인
+
+React StrictMode(개발 모드)에서 `useEffect`를 두 번 실행함. `ChatArea`의 초기 메시지 추가 effect와 `ChatPage`의 `startNewSession()` 호출 effect가 서로 다른 순서로 두 번씩 실행되면서 messages 배열 초기화와 메시지 추가가 타이밍 경쟁(race) 상태에 빠짐.
+
+```tsx
+// 문제 코드 — ChatArea.tsx
+useEffect(() => {
+  if (messages.length === 0) addMessage({ role: 'ai', content: Q.product })
+}, [])
+
+// 문제 코드 — ChatPage.tsx
+useEffect(() => {
+  if (!currentSessionId) startNewSession()  // messages를 [] 로 초기화
+}, [])
+```
+
+실행 순서(StrictMode):
+1. ChatArea effect → messages=[] → addMessage → messages=[msg]
+2. ChatPage effect → startNewSession → messages=[] ← 초기화
+3. (StrictMode 두 번째 실행)
+4. ChatArea effect → messages=[] → addMessage → messages=[msg] ← 두 번째 추가
+
+### 수정
+
+초기 인사 메시지를 `useEffect`로 추가하는 방식 대신, Zustand 스토어의 **초기 상태값에 포함**하고 `startNewSession()` 도 메시지 포함 상태로 리셋하도록 변경.
+
+```ts
+// chatStore.ts
+function makeGreeting(): ChatMessage {
+  return { id: 'init-greeting', role: 'ai', content: INITIAL_GREETING, timestamp: Date.now() }
+}
+
+// 초기 상태
+messages: [makeGreeting()],
+
+// startNewSession도 인사 메시지 포함
+startNewSession: () =>
+  set({ ..., messages: [makeGreeting()], chatStep: 'product' }),
+```
+
+`ChatArea`의 `useEffect` 초기 메시지 추가 코드는 완전 제거.
+
+### 교훈
+
+컴포넌트 마운트 시 "최초 1회 실행"을 기대하는 `useEffect`는 StrictMode에서 2회 실행됨. 초기 데이터는 store 초기값으로 넣고, effect는 side effect(API 호출, DOM 조작 등)에만 사용할 것.
+
+---
