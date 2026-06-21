@@ -90,14 +90,18 @@ export default function ChatArea() {
   }
 
   const inputDisabled = ['range', 'confirm', 'analyzing', 'done'].includes(chatStep)
-  const isDone = chatStep === 'done'
+  const isDone      = chatStep === 'done'
+  const isAnalyzing = chatStep === 'analyzing'
+
+  const headerTitle = isDone ? '분석 완료' : isAnalyzing ? '분석 진행 중' : '정보 입력 중'
+  const badgeLabel  = isDone ? 'AI 분석 완료' : isAnalyzing ? '분석 중...' : 'AI 준비됨'
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <span className={styles.title}>분석 진행 중</span>
+        <span className={styles.title}>{headerTitle}</span>
         <span className={`${styles.badge} ${isDone ? styles.done : ''}`}>
-          {isDone ? 'AI 분석 완료' : 'AI 분석 준비됨'}
+          {badgeLabel}
         </span>
       </header>
 
