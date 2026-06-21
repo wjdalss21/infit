@@ -3,13 +3,14 @@ import { useChatStore } from '@/stores/chatStore'
 import { useBrandStore } from '@/stores/brandStore'
 import { useAnalysisStore } from '@/stores/analysisStore'
 import { useResultStore } from '@/stores/resultStore'
+import { analyzeChannels } from '@/services/infit'
 import MessageBubble from './MessageBubble'
 import OptionChips from './OptionChips'
 import StepChecklist from './StepChecklist'
 import InputBar from './InputBar'
 import ResultSummary from '@/components/result/ResultSummary'
 import RankedCard from '@/components/result/RankedCard'
-import type { SubscriberRange, ChannelResult } from '@/types'
+import type { SubscriberRange } from '@/types'
 import styles from './ChatArea.module.scss'
 
 const Q: Record<string, string> = {
@@ -18,22 +19,6 @@ const Q: Record<string, string> = {
   keyword:  '검색 키워드를 입력해주세요.\n예: glow, 파운데이션 추천',
   range:    '구독자 범위를 선택해주세요.',
 }
-
-function avatar(name: string) {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff&size=80&bold=true&rounded=true`
-}
-
-const MOCK: ChannelResult[] = [
-  { rank:1, channelId:'ch1', channelName:'Dear_diarlee',  thumbnailUrl:avatar('DD'), channelUrl:'https://www.youtube.com/@dear_diarlee',  subscriberCount:79000,  scores:{quantitative:91.5, attractiveness:88.3, trustworthiness:82.0, expertise:79.5, total:84.2}, fsi:0.20, riskFlag:'none', isRecommended:true,  reason:'높은 매력성과 균형 잡힌 전문성',      riskTags:[] },
-  { rank:2, channelId:'ch2', channelName:'leeskin',       thumbnailUrl:avatar('LS'), channelUrl:'https://www.youtube.com/@leeskin',        subscriberCount:74500,  scores:{quantitative:85.0, attractiveness:80.0, trustworthiness:78.5, expertise:76.0, total:79.8}, fsi:0.30, riskFlag:'none', isRecommended:true,  reason:'신뢰성 높고 활발한 인게이지먼트',     riskTags:[] },
-  { rank:3, channelId:'ch3', channelName:'Kiyoko',        thumbnailUrl:avatar('KY'), channelUrl:'https://www.youtube.com/@kiyoko',         subscriberCount:79500,  scores:{quantitative:80.0, attractiveness:75.0, trustworthiness:74.0, expertise:72.5, total:75.1}, fsi:0.25, riskFlag:'none', isRecommended:true,  reason:'브랜드 톤 일치, 전문 콘텐츠 우수',   riskTags:[] },
-  { rank:4, channelId:'ch4', channelName:'krystallee',    thumbnailUrl:avatar('KL'), channelUrl:'https://www.youtube.com/@krystallee',     subscriberCount:565000, scores:{quantitative:72.0, attractiveness:70.0, trustworthiness:68.0, expertise:73.0, total:71.4}, fsi:0.35, riskFlag:'none', isRecommended:true,  reason:'뷰티 도메인 전문성 특화',             riskTags:[] },
-  { rank:5, channelId:'ch5', channelName:'HEMEKO GLOBAL', thumbnailUrl:avatar('HG'), channelUrl:'https://www.youtube.com/@hemekoglobal',   subscriberCount:320000, scores:{quantitative:65.0, attractiveness:55.0, trustworthiness:60.0, expertise:62.0, total:61.7}, fsi:0.40, riskFlag:'low',  isRecommended:false, reason:'매력성 점수 기준 미달',               riskTags:['매력성 부족'] },
-  { rank:6, channelId:'ch6', channelName:'beautybyrae',   thumbnailUrl:avatar('BR'), channelUrl:'https://www.youtube.com/@beautybyrae',    subscriberCount:810000, scores:{quantitative:58.0, attractiveness:50.0, trustworthiness:52.0, expertise:54.0, total:54.2}, fsi:0.55, riskFlag:'low',  isRecommended:false, reason:'전반적 점수 낮음, FSI 높음',          riskTags:['높은 FSI'] },
-  { rank:7, channelId:'ch7', channelName:'kbeautyjenny',  thumbnailUrl:avatar('KJ'), channelUrl:'https://www.youtube.com/@kbeautyjenny',   subscriberCount:231000, scores:{quantitative:50.0, attractiveness:45.0, trustworthiness:48.0, expertise:46.0, total:47.8}, fsi:0.50, riskFlag:'low',  isRecommended:false, reason:'신뢰성·전문성 모두 기준 미달',        riskTags:['신뢰성 부족'] },
-  { rank:8, channelId:'ch8', channelName:'makeuplysofia', thumbnailUrl:avatar('MS'), channelUrl:'https://www.youtube.com/@makeuplysofia',  subscriberCount:61000,  scores:{quantitative:40.0, attractiveness:32.0, trustworthiness:35.0, expertise:33.0, total:35.6}, fsi:0.60, riskFlag:'high', isRecommended:false, reason:'전 항목 저점, 리스크 감지',           riskTags:['높은 FSI','리스크 감지'] },
-  { rank:9, channelId:'ch9', channelName:'FACES CANADA',  thumbnailUrl:avatar('FC'), channelUrl:'https://www.youtube.com/@facescanada',    subscriberCount:62000,  scores:{quantitative:30.0, attractiveness:25.0, trustworthiness:28.0, expertise:27.0, total:28.3}, fsi:0.70, riskFlag:'high', isRecommended:false, reason:'다수 리스크 항목 감지',               riskTags:['높은 FSI','리스크 감지','매력성 부족','브랜드 불일치'] },
-]
 
 export default function ChatArea() {
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -68,23 +53,40 @@ export default function ChatArea() {
 
     const { productName, features, target, keyword } = useBrandStore.getState()
     const confirm = `입력 정보를 확인했습니다 ✅\n\n제품명: ${productName}\n제품 특징: ${features}\n타겟층: ${target}\n검색 키워드: ${keyword}\n구독자 범위: ${range}\n\nAI 에이전트가 분석을 시작합니다...`
+
     setTimeout(() => {
       addMessage({ role: 'ai', content: confirm })
       setStatus('analyzing')
       setStep('analyzing')
-      ;[1500, 3000, 5000, 7000, 9000].forEach((delay, i) => {
-        setTimeout(() => {
-          advanceStep()
-          if (i === 4) {
-            setTimeout(() => {
-              setResults(MOCK)
-              setStep('done')
-              setStatus('done')
-              addMessage({ role: 'ai', content: `분석이 완료되었습니다! 총 ${MOCK.length}개 채널을 평가하였습니다.` })
-            }, 1000)
-          }
-        }, delay)
-      })
+
+      // 시각적 단계 진행 (API 응답 대기 중 UX)
+      const stepTimers = [2000, 5000, 9000, 13000, 17000].map((delay) =>
+        setTimeout(() => advanceStep(), delay)
+      )
+
+      // 실제 API 호출
+      analyzeChannels({ productName, features, target, keyword, subscriberRange: range })
+        .then((results) => {
+          stepTimers.forEach(clearTimeout)
+          // 모든 단계 완료 처리
+          for (let i = 0; i < 5; i++) advanceStep()
+          setResults(results)
+          setStep('done')
+          setStatus('done')
+          addMessage({
+            role: 'ai',
+            content: `분석이 완료되었습니다! 총 ${results.length}개 채널을 평가하였습니다.`,
+          })
+        })
+        .catch((err: Error) => {
+          stepTimers.forEach(clearTimeout)
+          setStatus('error')
+          setStep('confirm')
+          addMessage({
+            role: 'ai',
+            content: `분석 중 오류가 발생했습니다.\n${err.message}\n\n잠시 후 다시 시도해주세요.`,
+          })
+        })
     }, 600)
   }
 
