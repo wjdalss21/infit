@@ -251,3 +251,46 @@ vercel dev   # 또는 npm run dev (package.json에서 vercel dev로 변경)
 Vercel Serverless Functions + Vite 조합에서 로컬 개발은 반드시 `vercel dev`를 사용해야 함. `npm run dev`(Vite 단독)는 API 라우트를 처리하지 못함.
 
 ---
+
+## [TRB-007] vercel dev 실행 시 화면 미표시 — src/main.tsx 500 에러
+
+### 현상
+
+`vercel dev` 실행 후 브라우저에 아무 화면도 뜨지 않음. 콘솔에 `GET http://localhost:3000/src/main.tsx net::ERR_ABORTED 500` 에러 발생.
+
+### 원인
+
+`vercel.json`에 `devCommand`와 `outputDirectory`가 없어서 `vercel dev`가 Vite를 어떻게 실행할지 몰라 원시 파일을 그대로 서빙하려 시도함. `.tsx` 파일을 브라우저에 직접 전달 → 500 에러.
+
+연쇄된 트러블슈팅:
+- **TRB-006**: `npm run dev` 에서 API 404 → `vercel dev` 사용 권장
+- **TRB-006 잘못된 수정**: `package.json` dev 스크립트를 `vercel dev`로 변경 → 재귀 호출 에러
+- **TRB-007**: `vercel dev` 직접 실행했으나 Vite 연동 설정 누락 → 500 에러
+
+### 수정
+
+`vercel.json`에 `devCommand`, `buildCommand`, `outputDirectory` 추가.
+
+```json
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "devCommand": "vite --port $PORT",
+  "rewrites": [...]
+}
+```
+
+`$PORT`는 Vercel CLI가 자동 할당하는 포트 변수. Vercel dev가 이 포트에서 Vite를 실행하고 앞단에서 프록시함.
+
+### 로컬 개발 최종 정리
+
+| 명령어 | 용도 |
+|---|---|
+| `vercel dev` | API 포함 전체 스택 로컬 실행 (권장) |
+| `npm run dev` | Vite 단독 실행 (UI만 확인할 때) |
+
+### 교훈
+
+`vercel dev`는 `devCommand`로 지정된 프레임워크 서버를 실행하고 그 앞에 API 라우팅을 붙임. `vercel.json`에 `devCommand`가 없으면 파일을 직접 서빙하려다 실패함. Vite 프로젝트에서는 반드시 `"devCommand": "vite --port $PORT"` 설정 필요.
+
+---
