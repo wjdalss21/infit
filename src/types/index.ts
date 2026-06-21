@@ -40,10 +40,11 @@ export interface AnalysisStepItem {
 }
 
 export interface ChannelScore {
-  quantitative: number
-  image: number
-  text: number
-  total: number
+  quantitative: number    // 정량점수
+  attractiveness: number  // 매력성
+  trustworthiness: number // 신뢰성
+  expertise: number       // 전문성
+  total: number           // 종합점수
 }
 
 export interface ChannelResult {

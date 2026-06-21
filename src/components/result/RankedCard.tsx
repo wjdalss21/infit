@@ -32,9 +32,10 @@ export default function RankedCard({ result }: Props) {
       </div>
       <div className={styles.detail}>
         <div className={styles.bars}>
-          <ScoreBar label="정량" value={scores.quantitative} />
-          <ScoreBar label="이미지" value={scores.image} />
-          <ScoreBar label="텍스트" value={scores.text} />
+          <ScoreBar label="정량점수"  value={scores.quantitative} />
+          <ScoreBar label="매력성"    value={scores.attractiveness} />
+          <ScoreBar label="신뢰성"    value={scores.trustworthiness} />
+          <ScoreBar label="전문성"    value={scores.expertise} />
         </div>
         <p className={styles.reason}>{isRecommended ? '추천 이유: ' : '비추천 이유: '}{reason}</p>
         {riskTags.length > 0 && (
