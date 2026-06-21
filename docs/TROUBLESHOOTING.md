@@ -216,3 +216,38 @@ git add api/analyze.js
 Vite 프로젝트의 `api/` 디렉토리 서버리스 함수는 프로젝트 TypeScript 설정과 독립적. 별도 tsconfig 없이는 `.js`로 작성해야 Vercel이 정상 인식. 기존 파일 확장자를 먼저 확인할 것.
 
 ---
+
+## [TRB-006] 로컬 개발 중 /api/analyze 404 — npm run dev 에서 API 미동작
+
+### 현상
+
+로컬(`http://localhost:5173`)에서 분석 시작 시 `POST /api/analyze 404 (Not Found)` 에러 발생. 배포 환경(Vercel)에서는 정상 동작.
+
+### 원인
+
+`npm run dev`는 Vite 개발 서버만 실행하기 때문에 `api/` 디렉토리의 Vercel Serverless Functions를 처리하지 못함. Vite는 정적 파일과 HMR만 담당하며, `/api/*` 경로에 대한 라우팅 로직이 없음.
+
+```
+npm run dev  →  Vite 서버만 실행 (포트 5173)
+                /api/* 경로 → 404
+```
+
+### 수정
+
+로컬 개발 시 `vercel dev` 명령어 사용. Vercel CLI가 Vite 빌드와 API 함수를 동시에 에뮬레이션함.
+
+```bash
+# 기존 (API 동작 안 함)
+npm run dev
+
+# 수정 후 (API 포함 전체 스택)
+vercel dev   # 또는 npm run dev (package.json에서 vercel dev로 변경)
+```
+
+`package.json`의 `dev` 스크립트를 `vercel dev`로 변경하고, 기존 Vite만 실행하는 스크립트는 `dev:vite`로 보존.
+
+### 교훈
+
+Vercel Serverless Functions + Vite 조합에서 로컬 개발은 반드시 `vercel dev`를 사용해야 함. `npm run dev`(Vite 단독)는 API 라우트를 처리하지 못함.
+
+---
